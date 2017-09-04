@@ -27,8 +27,8 @@
             <span>博客</span>
             <md-list-expand>
               <md-list>
-                <md-list-item  @click="openChildPage(pageType.blogs)" class="md-inset">我的博客</md-list-item>
-                <md-list-item @click="openChildPage(pageType.newBlog)" class="md-inset">写博客</md-list-item>
+                <md-list-item  @click="openChildPage('blogs')" class="md-inset">我的博客</md-list-item>
+                <md-list-item @click="openChildPage('newBlog')" class="md-inset">写博客</md-list-item>
               </md-list>
             </md-list-expand>
           </md-list-item>
@@ -67,7 +67,7 @@
     },
     methods: {
       openChildPage (pageName) {
-//        this.$router.push('/home/' + pageName + '')
+        this.$router.push('/' + pageName + '')
       }
     },
     components: {

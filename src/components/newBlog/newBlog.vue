@@ -1,11 +1,16 @@
 <template>
   <div class="newBlog">
-    开始写博客哟!
+    <editor></editor>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
-
+  import editor from '../../base/editor/editor.vue'
+  export default {
+    components: {
+      editor
+    }
+  }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
