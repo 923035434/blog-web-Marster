@@ -4,12 +4,16 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import VueMaterial from 'vue-material'
-var hljs = require('highlight.js')  // 应该用require而不是import
-window.hljs = hljs
-
 import 'vue-material/dist/vue-material.css'
 
 Vue.config.productionTip = false
+
+var hljs = require('highlight.js')  // 应该用require而不是import
+window.hljs = hljs
+window.hljs.configure({   // optionally configure hljs
+  languages: ['html', 'javascript', 'ruby', 'python', 'css']
+})
+
 /* eslint-disable no-new */
 Vue.use(VueMaterial)
 

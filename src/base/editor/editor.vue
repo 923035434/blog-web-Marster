@@ -6,6 +6,8 @@
 </template>
 
 <script type="text/ecmascript-6">
+    var hljs = require('highlight.js')  // 应该用require而不是import
+    window.hljs = window.hljs ? window.hljs : hljs
     var Quill = require('quill')
     export default {
       data () {
@@ -16,12 +18,9 @@
       components: {
       },
       mounted () {
-        window.hljs.configure({   // optionally configure hljs
-          languages: ['html', 'javascript', 'ruby', 'python', 'css']
-        })
         this.quillDom = this.$refs.quillDom
         let toolbarOptions = [
-          [{ 'font': [] }],
+          [{ 'font': ['Inconsolata', 'Roboto', 'Mirza', 'Arial', 'Helvetica'] }],
           [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
           ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
           [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
@@ -33,8 +32,12 @@
           [{'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
           [{ 'direction': 'rtl' }],                         // text direction
           [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+          ['link', 'image', 'video', 'formula'],                                // inner
           ['clean']                                         // remove formatting button
         ]
+        var Font = Quill.import('formats/font')
+        Font.whitelist = ['Inconsolata', 'Roboto', 'Mirza', 'Arial', 'Helvetica']
+        Quill.register(Font, true)
         this.editor = new Quill(this.quillDom, {
           modules: { syntax: true, toolbar: toolbarOptions },
           theme: 'snow'
@@ -45,13 +48,31 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="stylus" rel="stylesheet/stylus">
-  @import "~quill/dist/quill.snow.css"
-  @import "~highlight.js/styles/monokai-sublime.css"
     .editor
-      width: 100%
+      width: 80%
       height:100%
       padding: 40px
       .quill-editor-wrapper
         width: 100%
         height:100%
+      .ql-toolbar
+        .ql-font
+          span[data-value="Sans Serif"]::before
+            content: 'Sans Serif'
+            font-family: "Sans Serif"
+          span[data-value="Inconsolata"]::before
+            content: 'Inconsolata'
+            font-family: "Inconsolata"
+          span[data-value="Roboto"]::before
+            content: 'Roboto'
+            font-family: "Roboto"
+          span[data-value="Mirza"]::before
+            content: 'Mirza'
+            font-family: "Mirza"
+          span[data-value="Arial"]::before
+            content: 'Arial'
+            font-family: "Arial"
+          span[data-value="Helvetica"]::before
+            content: 'Helvetica'
+            font-family: "Helvetica"
 </style>

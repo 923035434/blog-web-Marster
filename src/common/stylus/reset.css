@@ -104,3 +104,23 @@ hr {
 input, select {
   vertical-align:middle;
 }
+
+
+.ql-font-Inconsolata {
+  font-family: "Inconsolata";
+}
+
+.ql-font-Roboto {
+  font-family: "Roboto";
+}
+
+.ql-font-Mirza {
+  font-family: "Mirza";
+}
+
+.ql-font-Arial {
+  font-family: "Arial";
+}
+.ql-font-Helvetica {
+  font-family: "Helvetica";
+}

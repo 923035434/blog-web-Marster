@@ -15,4 +15,6 @@
 
 <style>
 @import "common/stylus/reset.css";
+@import "~quill/dist/quill.snow.css";
+@import "~highlight.js/styles/monokai-sublime.css";
 </style>
