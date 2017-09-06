@@ -17,31 +17,41 @@
       },
       components: {
       },
+      methods: {
+        _initQuill () {
+          this.quillDom = this.$refs.quillDom
+          let toolbarOptions = [
+            [{ 'font': ['Inconsolata', 'Roboto', 'Mirza', 'Arial', 'Helvetica'] }],
+            [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
+            ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+            [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
+            [{'script': 'sub'}, { 'script': 'super' }],      // superscript/subscript
+            [{ 'header': 1 }, { 'header': 2 }],               // custom button values
+            ['blockquote', 'code-block'],
+            [{ 'align': [] }],
+            [{'list': 'ordered'}, { 'list': 'bullet' }],
+            [{'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
+            [{ 'direction': 'rtl' }],                         // text direction
+            [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+            ['link', 'image', 'video', 'formula'],                                // inner
+            ['clean']                                         // remove formatting button
+          ] // 功能栏的设置
+          let Font = Quill.import('formats/font')
+          Font.whitelist = ['Inconsolata', 'Roboto', 'Mirza', 'Arial', 'Helvetica']
+          Quill.register(Font, true)
+          this.editor = new Quill(this.quillDom, { // 初始化
+            modules: { syntax: true, toolbar: toolbarOptions },
+            theme: 'snow'
+          })
+          let that = this
+          this.editor.on('editor-change', () => {
+            let htmlContent = that.quillDom.querySelector(' .ql-editor').innerHTML
+            that.$emit('editor-change', htmlContent)
+          })
+        }
+      },
       mounted () {
-        this.quillDom = this.$refs.quillDom
-        let toolbarOptions = [
-          [{ 'font': ['Inconsolata', 'Roboto', 'Mirza', 'Arial', 'Helvetica'] }],
-          [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
-          ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
-          [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
-          [{'script': 'sub'}, { 'script': 'super' }],      // superscript/subscript
-          [{ 'header': 1 }, { 'header': 2 }],               // custom button values
-          ['blockquote', 'code-block'],
-          [{ 'align': [] }],
-          [{'list': 'ordered'}, { 'list': 'bullet' }],
-          [{'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
-          [{ 'direction': 'rtl' }],                         // text direction
-          [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-          ['link', 'image', 'video', 'formula'],                                // inner
-          ['clean']                                         // remove formatting button
-        ]
-        var Font = Quill.import('formats/font')
-        Font.whitelist = ['Inconsolata', 'Roboto', 'Mirza', 'Arial', 'Helvetica']
-        Quill.register(Font, true)
-        this.editor = new Quill(this.quillDom, {
-          modules: { syntax: true, toolbar: toolbarOptions },
-          theme: 'snow'
-        })
+        this._initQuill()
       }
     }
 </script>
@@ -50,7 +60,7 @@
 <style lang="stylus" rel="stylesheet/stylus">
     .editor
       width: 80%
-      height:100%
+      height:500px
       padding: 40px
       .quill-editor-wrapper
         width: 100%

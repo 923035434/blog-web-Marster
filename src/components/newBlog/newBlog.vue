@@ -19,24 +19,27 @@
           <label>简述：</label>
           <md-textarea v-model="desc" maxlength="60"></md-textarea>
         </md-input-container>
-        <editor></editor>
+        <editor @editor-change="editorChange"></editor>
         <md-button @click="send" class="send-btn md-raised md-primary">提交</md-button>
       </div>
     </div>
-
+    <img-tailor :show="showImgTailor" :imgSrc="imgSrc" ></img-tailor>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
   import editor from '../../base/editor/editor.vue'
+  import imgTailor from '../../base/imgTailor/imgTailor.vue'
   import {addBlog} from '../../api/api_blog'
   export default {
     data () {
       return {
-        imgSrc: null,
+        imgSrc: '',
         imgFile: {},
         title: '',
-        desc: ''
+        desc: '',
+        htmlContent: '',
+        showImgTailor: false
       }
     },
     methods: {
@@ -45,6 +48,7 @@
         let fileReader = new FileReader()
         fileReader.onload = (e) => {
           this.imgSrc = e.target.result
+          this.showImgTailor = true
         }
         fileReader.readAsDataURL(this.imgFile)
       },
@@ -68,16 +72,29 @@
         } else {
           formData.append('img', this.imgFile)
         }
+        if (this.htmlContent === '') {
+          this.show('请输入内容')
+          return
+        } else {
+          formData.append('htmlContent', this.htmlContent)
+        }
+        for (var value of formData.values()) {
+          console.log(value)
+        }
         addBlog(formData).then((res) => {
           this.showTip(res.message)
         })
       },
       showTip (text) {
         console.log(text)
+      },
+      editorChange (htmlContent) {
+        this.htmlContent = htmlContent
       }
     },
     components: {
-      editor
+      editor,
+      'img-tailor': imgTailor
     }
   }
 </script>
@@ -87,6 +104,7 @@
   .newBlog
     width: 100%
     height:100%
+    overflow :scroll
     .input-wrapper
       width:100%
       height:100%
