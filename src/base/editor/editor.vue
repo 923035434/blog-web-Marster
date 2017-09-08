@@ -1,5 +1,5 @@
 <template>
-  <div class="editor">
+  <div :style="{width:editorWidth,height:editorHeight}" class="editor">
     <div ref="quillDom" class="quill-editor-wrapper">
     </div>
   </div>
@@ -10,6 +10,16 @@
     window.hljs = window.hljs ? window.hljs : hljs
     var Quill = require('quill')
     export default {
+      props: {
+        editorHeight: {
+          type: String,
+          default: '500px'
+        },
+        editorWidth: {
+          type: String,
+          default: '80%'
+        }
+      },
       data () {
         return {
           editor: {}
@@ -59,8 +69,6 @@
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="stylus" rel="stylesheet/stylus">
     .editor
-      width: 80%
-      height:500px
       padding: 40px
       .quill-editor-wrapper
         width: 100%

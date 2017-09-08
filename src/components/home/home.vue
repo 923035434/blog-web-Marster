@@ -27,8 +27,8 @@
             <span>博客</span>
             <md-list-expand>
               <md-list>
-                <md-list-item  @click="openChildPage('blogs')" class="md-inset">我的博客</md-list-item>
-                <md-list-item @click="openChildPage('newBlog')" class="md-inset">写博客</md-list-item>
+                <md-list-item  @click="openChildPage('blogs','我的博客')" class="md-inset">我的博客</md-list-item>
+                <md-list-item @click="openChildPage('newBlog','新增博客')" class="md-inset">写博客</md-list-item>
               </md-list>
             </md-list-expand>
           </md-list-item>
@@ -37,7 +37,7 @@
             <span>留言板</span>
             <md-list-expand>
               <md-list>
-                <md-list-item class="md-inset">留言信息</md-list-item>
+                <md-list-item @click="openChildPage('messageBoard','留言板')" class="md-inset">留言信息</md-list-item>
               </md-list>
             </md-list-expand>
           </md-list-item>
@@ -50,27 +50,40 @@
         <h2 class="md-title">{{title}}</h2>
       </md-toolbar>
       <div class="content">
-        <router-view></router-view>
+        <keep-alive>
+          <router-view></router-view>
+        </keep-alive>
       </div>
     </div>
+    <blog-show @close="hiddenBlog" v-show="showBlog"></blog-show>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
 //  import * as pageType from '../../common/js/pageMapConfig'
+  import blogShow from '../../components/blogShow/blogShow.vue'
   export default {
     data () {
       return {
         title: 'Home',
-        childrenPageName: 'newBlog'
+        childrenPageName: 'newBlog',
+        showBlog: true
       }
     },
     methods: {
-      openChildPage (pageName) {
+      openChildPage (pageName, title) {
         this.$router.push('/' + pageName + '')
+        this.title = title
+      },
+      showBlog () {
+        this.showBlog = true
+      },
+      hiddenBlog () {
+        this.showBlog = false
       }
     },
     components: {
+      'blog-show': blogShow
     }
   }
 </script>
@@ -98,7 +111,10 @@
         width: 100%
         height:172px
         border-bottom: 1px solid rgba(0,0,0,.12)
-
+      .select-wrapper
+        font-family : Roboto
+        .md-inset
+          color : #969696
     .content-wrapper
       height:100%
       .title-bar

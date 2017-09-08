@@ -2,9 +2,10 @@
   <div
     @mousemove="MouseMove"
     @mouseup="MouseUp"
+    @click.self="close"
     v-show="show" class="imgTailor">
     <div ref="imgWrapperDom" class="img-wrapper">
-      <img class="bottom-img" v-show="imgSrc" :src="imgSrc" >
+      <img @load="imgLoad" class="bottom-img" v-show="imgSrc" :src="imgSrc" >
       <div class="top-img-wrapper">
         <img ref="topImgDom" class="top-img" v-show="imgSrc" :src="imgSrc">
       </div>
@@ -24,10 +25,12 @@
           <div class="bottomRight"
                @mousedown.stop="bottomRightMouseDown"
           ></div>
+          <div class="rec_width">width:{{recShowWidth}}</div>
+          <div class="rec_height">height:{{recShowHeight}}</div>
         </div>
       </div>
     </div>
-    <md-button class="ok_btn md-raised md-primary">ok</md-button>
+    <md-button @click="canvasClip" class="ok_btn md-raised md-primary">Clip(ok)</md-button>
   </div>
 </template>
 
@@ -52,9 +55,20 @@
     data () {
       return {
         mouseStar: false,
-        trangeSizeStar: false
+        trangeSizeStar: false,
+        recShowWidth: 200,
+        recShowHeight: 200
       }
     },
+//    watch: {
+//      imgSrc () {
+//        let recDom = this.$refs.recDom
+//        let imgWrapperDom = this.$refs.imgWrapperDom
+//        console.log(imgWrapperDom.clientWidth)
+//        recDom.style.height = recDom.style.width = imgWrapperDom.clientWidth / 2 + 'px'
+//        this.clip()
+//      }
+//    },
     computed: {
     },
     methods: {
@@ -74,6 +88,31 @@
 
         this.recWidth = recDom.clientWidth
         this.recHeight = recDom.clientHeight
+      },
+      _setRecSize () {
+        this.$nextTick(() => {
+          let recDom = this.$refs.recDom
+          this.recShowWidth = recDom.clientWidth
+          this.recShowHeight = recDom.clientHeight
+        })
+      },
+      canvasClip () {
+        let recDom = this.$refs.recDom
+        let imgWrapperDom = this.$refs.imgWrapperDom
+        let recRect = recDom.getBoundingClientRect()
+        let wraRect = imgWrapperDom.getBoundingClientRect()
+        let y = recRect.top - wraRect.top
+        let x = recRect.left - wraRect.left
+        let canvas = document.createElement('canvas')
+        canvas.width = this.recShowWidth
+        canvas.height = this.recShowHeight
+        let ctx = canvas.getContext('2d')
+        let img = new Image()
+        img.onload = () => {
+          ctx.drawImage(img, x, y, canvas.width, canvas.height, 0, 0, canvas.width, canvas.height)
+          this.$emit('imgClip', canvas.toDataURL())
+        }
+        img.src = this.imgSrc
       },
       topLeftMouseDown (e) {
         this.trangeSizeStar = true
@@ -101,36 +140,37 @@
         }
         let recDom = this.$refs.recDom
         let imgWrapperDom = this.$refs.imgWrapperDom
-//        let recRect = recDom.getBoundingClientRect()
-//        let wrapperRect = imgWrapperDom.getBoundingClientRect()
         let width = recDom.clientWidth
         let height = recDom.clientHeight
         let left = this.recLeft
         let top = this.recTop
         switch (this.changeType) {
-          case moveType.topLeft:
+          case moveType.topLeft: //  左上
             width = Math.min(Math.max(this.recWidth + (this.changeStar.x - e.clientX), 0), imgWrapperDom.clientWidth)
             height = Math.min(Math.max(this.recHeight + (this.changeStar.y - e.clientY), 0), imgWrapperDom.clientHeight)
-            console.log(this.recHeight, this.changeStar.y - e.clientY, width, height)
             left = Math.min(Math.max(left + (e.clientX - this.changeStar.x), 0), imgWrapperDom.clientWidth - recDom.clientWidth)
             top = Math.min(Math.max(top + (e.clientY - this.changeStar.y), 0), imgWrapperDom.clientHeight - recDom.clientHeight)
-            console.log('topLeftMove')
             break
-          case moveType.topRight:
+          case moveType.topRight: //  右上
+            width = Math.min(Math.max(this.recWidth + (e.clientX - this.changeStar.x), 0), imgWrapperDom.clientWidth)
+            height = Math.min(Math.max(this.recHeight + (this.changeStar.y - e.clientY), 0), imgWrapperDom.clientHeight)
             top = Math.min(Math.max(top + (e.clientY - this.changeStar.y), 0), imgWrapperDom.clientHeight - recDom.clientHeight)
-            console.log('topRightMove')
             break
-          case moveType.bottomLeft:
-            console.log('bottomLeftMove')
+          case moveType.bottomLeft: //  左下
+            width = Math.min(Math.max(this.recWidth + (this.changeStar.x - e.clientX), 0), imgWrapperDom.clientWidth)
+            height = Math.min(Math.max(this.recHeight + (e.clientY - this.changeStar.y), 0), imgWrapperDom.clientHeight)
+            left = Math.min(Math.max(left + (e.clientX - this.changeStar.x), 0), imgWrapperDom.clientWidth - recDom.clientWidth)
             break
-          case moveType.bottomRight:
-            console.log('bottomLeftMove')
+          case moveType.bottomRight: //  右下
+            width = Math.min(Math.max(this.recWidth + (e.clientX - this.changeStar.x), 0), imgWrapperDom.clientWidth)
+            height = Math.min(Math.max(this.recHeight + (e.clientY - this.changeStar.y), 0), imgWrapperDom.clientHeight)
             break
         }
         recDom.style.top = top + 'px'
         recDom.style.left = left + 'px'
         recDom.style.width = width + 'px'
         recDom.style.height = height + 'px'
+        this._setRecSize()
       },
       recMouseDown (e) {
         this.mouseStar = true
@@ -184,6 +224,19 @@
         let bottom = recRect.bottom - wrapperRect.top
         let left = recRect.left - wrapperRect.left
         topImgDom.style.clip = 'rect(' + top + 'px,' + right + 'px,' + bottom + 'px,' + left + 'px)'
+      },
+      imgLoad () {
+        console.log('imgLoad')
+        let recDom = this.$refs.recDom
+        let imgWrapperDom = this.$refs.imgWrapperDom
+        console.log(imgWrapperDom.clientWidth)
+        recDom.style.height = recDom.style.width = imgWrapperDom.clientWidth / 2 + 'px'
+        this.recShowWidth = recDom.clientWidth
+        this.recShowHeight = recDom.clientHeight
+        this.clip()
+      },
+      close () {
+        this.$emit('closeTailor')
       }
     }
   }
@@ -265,6 +318,22 @@
             width: 6px
             height: 6px
             cursor: se-resize
+          .rec_width
+            position :absolute
+            bottom :30px
+            right :-110px
+            width: 100px
+            height: 24px
+            color :#07f589
+            cursor :pointer
+          .rec_height
+            position :absolute
+            bottom :0px
+            right :-110px
+            width: 100px
+            height: 24px
+            color :#07f589
+            cursor :pointer
     .ok_btn
       position :absolute
       right: 10%

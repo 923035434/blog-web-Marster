@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import blogs from '../components/blogs/blogs.vue'
 import newBlog from '../components/newBlog/newBlog.vue'
+import messageBoard from '../components/messageBoard/messageBoard.vue'
 Vue.use(Router)
 
 export default new Router({
@@ -17,6 +18,10 @@ export default new Router({
     {
       path: '/newBlog',
       component: newBlog
+    },
+    {
+      path: '/messageBoard',
+      component: messageBoard
     }
   ]
 })

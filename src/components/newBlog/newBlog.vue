@@ -6,7 +6,7 @@
           <label>选择图片</label>
           <md-file @selected="imgSelected" accept="image/*"></md-file>
         </md-input-container>
-        <div class="imgLoader">
+        <div @click="showTailor" class="imgLoader">
           <md-image :md-src="imgSrc"></md-image>
         </div>
       </div>
@@ -23,7 +23,7 @@
         <md-button @click="send" class="send-btn md-raised md-primary">提交</md-button>
       </div>
     </div>
-    <img-tailor :show="showImgTailor" :imgSrc="imgSrc" ></img-tailor>
+    <img-tailor @closeTailor="closeTailor" @imgClip="imgClip" :show="showImgTailor" :imgSrc="imgSourceSrc" ></img-tailor>
   </div>
 </template>
 
@@ -34,6 +34,7 @@
   export default {
     data () {
       return {
+        imgSourceSrc: '',
         imgSrc: '',
         imgFile: {},
         title: '',
@@ -47,8 +48,8 @@
         this.imgFile = para[0]
         let fileReader = new FileReader()
         fileReader.onload = (e) => {
-          this.imgSrc = e.target.result
-          this.showImgTailor = true
+          this.imgSourceSrc = e.target.result
+          this.showTailor()
         }
         fileReader.readAsDataURL(this.imgFile)
       },
@@ -90,6 +91,19 @@
       },
       editorChange (htmlContent) {
         this.htmlContent = htmlContent
+      },
+      imgClip (imgData) {
+        this.closeTailor()
+        this.imgSrc = imgData
+      },
+      closeTailor () {
+        this.showImgTailor = false
+      },
+      showTailor () {
+        if (this.imgSourceSrc === '') {
+          return
+        }
+        this.showImgTailor = true
       }
     },
     components: {
