@@ -74,7 +74,7 @@
           formData.append('img', this.imgFile)
         }
         if (this.htmlContent === '') {
-          this.show('请输入内容')
+          this.showTip('请输入内容')
           return
         } else {
           formData.append('htmlContent', this.htmlContent)
@@ -86,8 +86,8 @@
           this.showTip(res.message)
         })
       },
-      showTip (text) {
-        console.log(text)
+      showTip (message) {
+        this.$emit('message', message)
       },
       editorChange (htmlContent) {
         this.htmlContent = htmlContent

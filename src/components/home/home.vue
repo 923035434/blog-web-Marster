@@ -5,14 +5,14 @@
       <div class="select-wrapper">
         <md-list>
           <md-list-item >
-            <span>隐私修改</span>
+            <span>博客</span>
             <md-list-expand>
               <md-list>
-                <md-list-item class="md-inset">个人信息</md-list-item>
+                <md-list-item  @click="openChildPage('blogs','我的博客')" class="md-inset">我的博客</md-list-item>
+                <md-list-item @click="openChildPage('newBlog','新增博客')" class="md-inset">写博客</md-list-item>
               </md-list>
             </md-list-expand>
           </md-list-item>
-
           <md-list-item >
             <span>音乐</span>
             <md-list-expand>
@@ -22,17 +22,6 @@
               </md-list>
             </md-list-expand>
           </md-list-item>
-
-          <md-list-item >
-            <span>博客</span>
-            <md-list-expand>
-              <md-list>
-                <md-list-item  @click="openChildPage('blogs','我的博客')" class="md-inset">我的博客</md-list-item>
-                <md-list-item @click="openChildPage('newBlog','新增博客')" class="md-inset">写博客</md-list-item>
-              </md-list>
-            </md-list-expand>
-          </md-list-item>
-
           <md-list-item >
             <span>留言板</span>
             <md-list-expand>
@@ -41,7 +30,14 @@
               </md-list>
             </md-list-expand>
           </md-list-item>
-
+          <md-list-item >
+            <span>个人设置</span>
+            <md-list-expand>
+              <md-list>
+                <md-list-item @click="openChildPage('baseInfo','基本信息')" class="md-inset">基本信息</md-list-item>
+              </md-list>
+            </md-list-expand>
+          </md-list-item>
         </md-list>
       </div>
     </div>
@@ -51,11 +47,15 @@
       </md-toolbar>
       <div class="content">
         <keep-alive>
-          <router-view></router-view>
+          <router-view @message="openSnackbar"></router-view>
         </keep-alive>
       </div>
     </div>
-    <blog-show @close="hiddenBlog" v-show="showBlog"></blog-show>
+    <blog-show @close="hiddenBlog" v-show="blogShowState"></blog-show>
+    <md-snackbar :md-position="'bottom right'" ref="snackbar" :md-duration="3000">
+      <span>{{snackbarMessage}}</span>
+      <md-button class="md-accent" md-theme="light-blue" @click="$refs.snackbar.close()">我知道了</md-button>
+    </md-snackbar>
   </div>
 </template>
 
@@ -67,7 +67,8 @@
       return {
         title: 'Home',
         childrenPageName: 'newBlog',
-        showBlog: true
+        blogShowState: true,
+        snackbarMessage: ''
       }
     },
     methods: {
@@ -76,10 +77,16 @@
         this.title = title
       },
       showBlog () {
-        this.showBlog = true
+        this.blogShowState = true
       },
       hiddenBlog () {
-        this.showBlog = false
+        this.blogShowState = false
+      },
+      openSnackbar (message) {
+        if (message) {
+          this.snackbarMessage = message
+        }
+        this.$refs.snackbar.open()
       }
     },
     components: {

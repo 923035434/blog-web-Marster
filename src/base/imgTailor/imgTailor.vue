@@ -226,10 +226,8 @@
         topImgDom.style.clip = 'rect(' + top + 'px,' + right + 'px,' + bottom + 'px,' + left + 'px)'
       },
       imgLoad () {
-        console.log('imgLoad')
         let recDom = this.$refs.recDom
         let imgWrapperDom = this.$refs.imgWrapperDom
-        console.log(imgWrapperDom.clientWidth)
         recDom.style.height = recDom.style.width = imgWrapperDom.clientWidth / 2 + 'px'
         this.recShowWidth = recDom.clientWidth
         this.recShowHeight = recDom.clientHeight

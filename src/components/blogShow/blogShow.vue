@@ -34,17 +34,24 @@
           </div>
         </div>
       </div>
+      <img-tailor @closeTailor="closeTailor" @imgClip="imgClip" :show="showImgTailor" :imgSrc="imgSourceSrc" ></img-tailor>
     </div>
   </transition>
 </template>
 
 <script type="text/ecmascript-6">
   import editor from '../../base/editor/editor.vue'
+  import imgTailor from '../../base/imgTailor/imgTailor.vue'
   export default {
     data () {
       return {
         editorH: 500,
-        imgSrc: ''
+        title: '',
+        desc: '',
+        imgSrc: '',
+        imgFile: '',
+        showImgTailor: false,
+        imgSourceSrc: ''
       }
     },
     computed: {
@@ -57,13 +64,36 @@
         this.$emit('close')
       },
       editorChange (htmlContent) {
+      },
+      imgSelected (para) {
+        if (para.length === 0) {
+          return
+        }
+        this.imgFile = para[0]
+        let fileReader = new FileReader()
+        fileReader.onload = (e) => {
+          this.imgSourceSrc = e.target.result
+          this.showTailor()
+        }
+        fileReader.readAsDataURL(this.imgFile)
+      },
+      imgClip (dataUrl) {
+        this.imgSrc = dataUrl
+        this.closeTailor()
+      },
+      showTailor () {
+        this.showImgTailor = true
+      },
+      closeTailor () {
+        this.showImgTailor = false
       }
     },
     created () {
       this.editorH = document.body.clientHeight * 0.9
     },
     components: {
-      editor
+      editor,
+      'img-tailor': imgTailor
     }
   }
 </script>
