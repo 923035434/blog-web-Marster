@@ -35,6 +35,7 @@
             <md-list-expand>
               <md-list>
                 <md-list-item @click="openChildPage('baseInfo','基本信息')" class="md-inset">基本信息</md-list-item>
+                <md-list-item @click="openChildPage('personality','个性设置')" class="md-inset">个性设置</md-list-item>
               </md-list>
             </md-list-expand>
           </md-list-item>

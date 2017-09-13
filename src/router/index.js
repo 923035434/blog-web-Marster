@@ -4,6 +4,8 @@ import blogs from '../components/blogs/blogs.vue'
 import newBlog from '../components/newBlog/newBlog.vue'
 import messageBoard from '../components/messageBoard/messageBoard.vue'
 import baseInfo from '../components/baseInfo/baseInfo.vue'
+import personalitySetting from '../components/personalitySetting/personalitySetting.vue'
+
 Vue.use(Router)
 
 export default new Router({
@@ -27,6 +29,10 @@ export default new Router({
     {
       path: '/baseInfo',
       component: baseInfo
+    },
+    {
+      path: '/personality',
+      component: personalitySetting
     }
   ]
 })

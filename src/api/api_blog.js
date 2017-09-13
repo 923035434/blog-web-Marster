@@ -3,7 +3,7 @@ import axios from 'axios'
 const url = '/api/blog'
 
 export function addBlog (formData) {
-  return axios.post({
+  return axios({
     method: 'post',
     url: url,
     data: formData
