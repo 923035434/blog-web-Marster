@@ -1,7 +1,7 @@
 <template>
   <div class="baseInfo">
     <div class="infoWrapper">
-      <div class="item-title">基本信息设置</div>
+      <title-bar text="基本信息设置"></title-bar>
       <div class="avatar-wrapper">
         <img class="avatar" :src="avatarUrl" alt="">
         <input @change="imgSelected" class="img-file" accept="image/*" type="file">
@@ -29,7 +29,7 @@
           </div>
         </div>
       </div>
-      <div class="item-title">密码设置</div>
+      <title-bar text="密码设置"></title-bar>
       <div class="password-wrapper">
         <div class="old-password-1">
           <md-input-container md-clearable>
@@ -60,6 +60,8 @@
 
 <script type="text/ecmascript-6">
   import imgTailor from '../../base/imgTailor/imgTailor.vue'
+  import titleBar from '../../base/titleBar/titleBar.vue'
+  import {editBaseInfo, getBaseInfo} from '../../api/api_BlogSetting'
   export default {
     data () {
       return {
@@ -75,9 +77,42 @@
         imgSourceSrc: ''
       }
     },
+    created () {
+      getBaseInfo().then((res) => {
+        let result = JSON.parse(res)
+        if (result.code !== 0) {
+          console.log('getBaseInfo错误')
+          return
+        }
+        let data = result.data
+        this.name = data.userName
+        this.signature = data.signature
+        this.address = data.address
+        this.avatarUrl = data.avatar
+      })
+    },
     methods: {
       modifyBaseInfo () {
-        console.log('修改基本')
+        let param = {}
+        param.UserName = this.name
+        param.Signature = this.signature
+        param.Address = this.address
+        if (this.imgSourceSrc !== '') {
+          param.Avatar = this.avatarUrl
+        }
+        editBaseInfo(param).then((res) => {
+          let result = JSON.parse(res)
+          if (result.code !== 0) {
+            this.showTip('修改失败')
+            return
+          }
+          let data = result.data
+          this.name = data.userName
+          this.signature = data.signature
+          this.address = data.address
+          this.avatarUrl = data.avatar
+          this.showTip('修改成功')
+        })
       },
       modifyPassword () {
         if (this.oldPassword === '') {
@@ -120,7 +155,8 @@
       }
     },
     components: {
-      'img-tailor': imgTailor
+      'img-tailor': imgTailor,
+      'title-bar': titleBar
     }
   }
 </script>
@@ -129,18 +165,8 @@
 <style lang="stylus" rel="stylesheet/stylus">
   .baseInfo
     width: 100%
-    height:100%
+    min-height:100%
     overflow :scroll
-    .item-title
-      width: 100%
-      height:40px
-      line-height :40px
-      padding-left:16px
-      border-left:4px solid #0aa89e
-      background-color: #e5e6e6
-      color :#313534
-      margin-bottom:40px
-      font-size:20px
     .avatar-wrapper
       position :relative
       border-radius :50%

@@ -117,7 +117,6 @@
 <style lang="stylus" rel="stylesheet/stylus">
   .newBlog
     width: 100%
-    height:100%
     overflow :scroll
     .input-wrapper
       width:100%

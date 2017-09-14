@@ -114,6 +114,7 @@
       opacity :0
     .close_wrapper
       position :absolute
+      z-index :50
       right: 100px
       top : 50px
       color :#000

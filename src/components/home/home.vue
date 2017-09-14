@@ -46,7 +46,7 @@
       <md-toolbar class="title-bar">
         <h2 class="md-title">{{title}}</h2>
       </md-toolbar>
-      <div class="content">
+      <div :style="{'height':contentHeight}" class="content">
         <keep-alive>
           <router-view @message="openSnackbar"></router-view>
         </keep-alive>
@@ -92,6 +92,11 @@
     },
     components: {
       'blog-show': blogShow
+    },
+    computed: {
+      contentHeight () {
+        return document.body.clientHeight - 64 + 'px'
+      }
     }
   }
 </script>
@@ -124,11 +129,12 @@
         .md-inset
           color : #969696
     .content-wrapper
-      height:100%
+      position :relative
+      max-height:100%
       .title-bar
         box-shadow: 0 1px 3px rgba(0,0,0,.2), 0 1px 1px rgba(0,0,0,.14), 0 2px 1px -1px rgba(0,0,0,.12)
       .content
-        width: 100%
-        height:100%
         padding:16px
+        overflow :scroll
+        overflow-x: hidden
 </style>
