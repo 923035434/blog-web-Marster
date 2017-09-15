@@ -65,10 +65,10 @@
   export default {
     data () {
       return {
-        avatarUrl: 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1505634699&di=57b6ff191b8bd0663f679b66b20de0f0&imgtype=jpg&er=1&src=http%3A%2F%2Fimg5.duitang.com%2Fuploads%2Fitem%2F201312%2F05%2F20131205172445_mEsMU.jpeg',
-        name: '刘小先森。',
-        signature: '一个从朝阳行业转世投胎的小小程序员。',
-        address: '广州',
+        avatarUrl: '',
+        name: '',
+        signature: '',
+        address: '',
         oldPassword: '',
         newPassword1: '',
         newPassword2: '',
@@ -166,7 +166,6 @@
   .baseInfo
     width: 100%
     min-height:100%
-    overflow :scroll
     .avatar-wrapper
       position :relative
       border-radius :50%
