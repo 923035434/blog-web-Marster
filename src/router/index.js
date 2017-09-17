@@ -5,6 +5,7 @@ import newBlog from '../components/newBlog/newBlog.vue'
 import messageBoard from '../components/messageBoard/messageBoard.vue'
 import baseInfo from '../components/baseInfo/baseInfo.vue'
 import personalitySetting from '../components/personalitySetting/personalitySetting.vue'
+import iLikeTheMusic from '../components/iLikeTheMusic/iLikeTheMusic.vue'
 
 Vue.use(Router)
 
@@ -33,6 +34,10 @@ export default new Router({
     {
       path: '/personality',
       component: personalitySetting
+    },
+    {
+      path: '/lickTheMusic',
+      component: iLikeTheMusic
     }
   ]
 })

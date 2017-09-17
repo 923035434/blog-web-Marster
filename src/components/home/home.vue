@@ -8,8 +8,9 @@
             <span>博客</span>
             <md-list-expand>
               <md-list>
-                <md-list-item  @click="openChildPage('blogs','我的博客')" class="md-inset">我的博客</md-list-item>
-                <md-list-item @click="openChildPage('newBlog','新增博客')" class="md-inset">写博客</md-list-item>
+                <md-list-item  @click="openChildPage('blogs','我的博客')" class="md-inset">我的博客<md-icon>event_node</md-icon></md-list-item>
+
+                <md-list-item @click="openChildPage('newBlog','新增博客')" class="md-inset">写博客<md-icon>create</md-icon></md-list-item>
               </md-list>
             </md-list-expand>
           </md-list-item>
@@ -17,8 +18,7 @@
             <span>音乐</span>
             <md-list-expand>
               <md-list>
-                <md-list-item class="md-inset">歌手</md-list-item>
-                <md-list-item class="md-inset">所有歌曲</md-list-item>
+                <md-list-item @click="openChildPage('lickTheMusic','我喜欢的音乐')" class="md-inset">我喜欢的音乐<md-icon>headset</md-icon></md-list-item>
               </md-list>
             </md-list-expand>
           </md-list-item>
@@ -26,7 +26,7 @@
             <span>留言板</span>
             <md-list-expand>
               <md-list>
-                <md-list-item @click="openChildPage('messageBoard','留言板')" class="md-inset">留言信息</md-list-item>
+                <md-list-item @click="openChildPage('messageBoard','留言板')" class="md-inset">留言信息<md-icon>message</md-icon></md-list-item>
               </md-list>
             </md-list-expand>
           </md-list-item>
@@ -34,8 +34,8 @@
             <span>个人设置</span>
             <md-list-expand>
               <md-list>
-                <md-list-item @click="openChildPage('baseInfo','基本信息')" class="md-inset">基本信息</md-list-item>
-                <md-list-item @click="openChildPage('personality','个性设置')" class="md-inset">个性设置</md-list-item>
+                <md-list-item @click="openChildPage('baseInfo','基本信息')" class="md-inset">基本信息<md-icon>settings</md-icon></md-list-item>
+                <md-list-item @click="openChildPage('personality','个性设置')" class="md-inset">个性设置<md-icon>settings_system_daydream</md-icon></md-list-item>
               </md-list>
             </md-list-expand>
           </md-list-item>
