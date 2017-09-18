@@ -21,6 +21,14 @@
         </md-input-container>
         <editor @editor-change="editorChange"></editor>
         <md-button @click="send" class="send-btn md-raised md-primary">提交</md-button>
+        <div class="type-select-wrapper">
+          <md-input-container>
+            <label for="type-select">选择类型</label>
+            <md-select id="type-select" v-model="selectTypeIndex">
+              <md-option :value="index"  v-for="(item,index) in typeList" >{{item.name}}</md-option>
+            </md-select>
+          </md-input-container>
+        </div>
       </div>
     </div>
     <img-tailor @closeTailor="closeTailor" @imgClip="imgClip" :show="showImgTailor" :imgSrc="imgSourceSrc" ></img-tailor>
@@ -30,7 +38,7 @@
 <script type="text/ecmascript-6">
   import editor from '../../base/editor/editor.vue'
   import imgTailor from '../../base/imgTailor/imgTailor.vue'
-  import {addBlog} from '../../api/api_blog'
+  import {addBlog, getType} from '../../api/api_blog'
   export default {
     data () {
       return {
@@ -40,8 +48,19 @@
         title: '',
         desc: '',
         htmlContent: '',
-        showImgTailor: false
+        showImgTailor: false,
+        selectTypeIndex: -1,
+        typeList: [{
+          id: 0,
+          name: 'javascript'
+        }, {
+          id: 1,
+          name: 'C#'
+        }]
       }
+    },
+    created () {
+      this._getType()
     },
     methods: {
       imgSelected (para) {
@@ -54,37 +73,43 @@
         fileReader.readAsDataURL(this.imgFile)
       },
       send () {
-        let formData = new FormData()
         if (this.title === '') {
           this.showTip('请输入标题')
           return
-        } else {
-          formData.append('title', this.title)
         }
         if (this.desc === '') {
           this.showTip('请输入简述')
           return
-        } else {
-          formData.append('desc', this.desc)
         }
         if (!this.imgFile.name) {
           this.showTip('请选择图片')
           return
-        } else {
-          formData.append('img', this.imgFile)
         }
         if (this.htmlContent === '') {
           this.showTip('请输入内容')
           return
-        } else {
-          formData.append('htmlContent', this.htmlContent)
         }
-        for (var value of formData.values()) {
-          console.log(value)
+        if (this.selectTypeIndex === -1) {
+          this.showTip('请选择类型')
+          return
         }
-        addBlog(formData).then((res) => {
+        let param = {
+          TypeId: this.typeList[this.selectTypeIndex].id,
+          Title: this.title,
+          Desc: this.desc,
+          ImgUrl: this.imgFile,
+          HtmlContent: this.htmlContent
+        }
+        addBlog(param).then((res) => {
+          let result = JSON.parse(res)
           this.showTip(res.message)
+          if (result.code === 0) {
+            this.clearPage()
+          }
         })
+      },
+      clearPage () {
+        console.log('clearPage')
       },
       showTip (message) {
         this.$emit('message', message)
@@ -104,6 +129,16 @@
           return
         }
         this.showImgTailor = true
+      },
+      _getType () {
+        getType().then((res) => {
+          let result = JSON.parse(res)
+          if (result.code !== 0) {
+            this.showTip(result.message)
+            return
+          }
+          this.typeList = result.data
+        })
       }
     },
     components: {
@@ -142,4 +177,9 @@
           height:50px
           right :5%
           bottom :20%
+        .type-select-wrapper
+          position :absolute
+          right:5%
+          bottom : 50%
+          width :150px
 </style>

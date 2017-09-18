@@ -36,6 +36,7 @@
               <md-list>
                 <md-list-item @click="openChildPage('baseInfo','基本信息')" class="md-inset">基本信息<md-icon>settings</md-icon></md-list-item>
                 <md-list-item @click="openChildPage('personality','个性设置')" class="md-inset">个性设置<md-icon>settings_system_daydream</md-icon></md-list-item>
+                <md-list-item @click="openChildPage('blogSetting','博客设置')" class="md-inset">博客设置<md-icon>perm_data_setting</md-icon></md-list-item>
               </md-list>
             </md-list-expand>
           </md-list-item>
@@ -63,6 +64,10 @@
 <script type="text/ecmascript-6">
 //  import * as pageType from '../../common/js/pageMapConfig'
   import blogShow from '../../components/blogShow/blogShow.vue'
+  import {createblogTypes} from '../../common/js/blogType.js'
+  import {getBlogs} from '../../api/api_blog'
+  import {mapMutations} from 'vuex'
+  import * as Mtypes from '../../store/mutation-types'
   export default {
     data () {
       return {
@@ -71,6 +76,17 @@
         blogShowState: true,
         snackbarMessage: ''
       }
+    },
+    created () {
+      getBlogs().then((res) => {
+        let result = JSON.parse(res)
+        if (result.code !== 0) {
+          this.openSnackbar('getBlogs错误')
+        }
+        console.log(result)
+        let blogTypes = createblogTypes(result.date)
+        this.setBlogTypes(blogTypes)
+      })
     },
     methods: {
       openChildPage (pageName, title) {
@@ -88,7 +104,10 @@
           this.snackbarMessage = message
         }
         this.$refs.snackbar.open()
-      }
+      },
+      ...mapMutations({
+        'setBlogTypes': Mtypes.SET_BLOGTYPES
+      })
     },
     components: {
       'blog-show': blogShow
