@@ -58,6 +58,9 @@
             let htmlContent = that.quillDom.querySelector(' .ql-editor').innerHTML
             that.$emit('editor-change', htmlContent)
           })
+        },
+        clearContent () {
+          this.editor.deleteText(0, this.editor.getLength())
         }
       },
       mounted () {

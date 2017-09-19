@@ -67,7 +67,6 @@
   import {createblogTypes} from '../../common/js/blogType.js'
   import {getBlogs} from '../../api/api_blog'
   import {mapMutations} from 'vuex'
-  import * as Mtypes from '../../store/mutation-types'
   export default {
     data () {
       return {
@@ -83,8 +82,7 @@
         if (result.code !== 0) {
           this.openSnackbar('getBlogs错误')
         }
-        console.log(result)
-        let blogTypes = createblogTypes(result.date)
+        let blogTypes = createblogTypes(result.data)
         this.setBlogTypes(blogTypes)
       })
     },
@@ -106,7 +104,7 @@
         this.$refs.snackbar.open()
       },
       ...mapMutations({
-        'setBlogTypes': Mtypes.SET_BLOGTYPES
+        'setBlogTypes': 'SET_BLOGTYPES'
       })
     },
     components: {

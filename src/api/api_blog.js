@@ -25,7 +25,7 @@ export function addBlog (formData) {
 }
 
 export function getType () {
-  const url = 'api/blogType'
+  const url = '/api/BlogType'
   return axios({
     url: url,
     method: 'get'
@@ -34,8 +34,22 @@ export function getType () {
   })
 }
 
+export function editType (id, param) {
+  const url = '/api/BlogType'
+  return axios({
+    url: url + '?id=' + id,
+    method: 'put',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    data: param
+  }).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
 export function addType (param) {
-  const url = 'api/blogType'
+  const url = '/api/BlogType'
   return axios({
     url: url,
     method: 'post',
@@ -43,7 +57,17 @@ export function addType (param) {
       'Content-Type': 'application/json'
     },
     data: param
-  }).them((res) => {
+  }).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
+export function deleteType (id) {
+  const url = '/api/BlogType'
+  return axios({
+    url: url + '?id=' + id,
+    method: 'delete'
+  }).then((res) => {
     return Promise.resolve(res.data)
   })
 }

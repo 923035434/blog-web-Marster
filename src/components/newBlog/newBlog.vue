@@ -19,13 +19,13 @@
           <label>简述：</label>
           <md-textarea v-model="desc" maxlength="60"></md-textarea>
         </md-input-container>
-        <editor @editor-change="editorChange"></editor>
+        <editor ref="editor" @editor-change="editorChange"></editor>
         <md-button @click="send" class="send-btn md-raised md-primary">提交</md-button>
         <div class="type-select-wrapper">
           <md-input-container>
             <label for="type-select">选择类型</label>
-            <md-select id="type-select" v-model="selectTypeIndex">
-              <md-option :value="index"  v-for="(item,index) in typeList" >{{item.name}}</md-option>
+            <md-select id="type-select" v-model="selectTypeId">
+              <md-option :value="item.id"  v-for="(item,index) in blogTypes" >{{item.name}}</md-option>
             </md-select>
           </md-input-container>
         </div>
@@ -38,7 +38,8 @@
 <script type="text/ecmascript-6">
   import editor from '../../base/editor/editor.vue'
   import imgTailor from '../../base/imgTailor/imgTailor.vue'
-  import {addBlog, getType} from '../../api/api_blog'
+  import {addBlog} from '../../api/api_blog'
+  import {mapGetters} from 'vuex'
   export default {
     data () {
       return {
@@ -49,18 +50,15 @@
         desc: '',
         htmlContent: '',
         showImgTailor: false,
-        selectTypeIndex: -1,
-        typeList: [{
-          id: 0,
-          name: 'javascript'
-        }, {
-          id: 1,
-          name: 'C#'
-        }]
+        selectTypeId: -1
       }
     },
     created () {
-      this._getType()
+    },
+    computed: {
+      ...mapGetters([
+        'blogTypes'
+      ])
     },
     methods: {
       imgSelected (para) {
@@ -93,23 +91,35 @@
           this.showTip('请选择类型')
           return
         }
+        let time = (new Date()).getTime()
         let param = {
-          TypeId: this.typeList[this.selectTypeIndex].id,
+          TypeId: this.selectTypeId,
           Title: this.title,
           Desc: this.desc,
-          ImgUrl: this.imgFile,
-          HtmlContent: this.htmlContent
+          ImgUrl: this.imgSrc,
+          HtmlContent: this.htmlContent,
+          Time: time
         }
         addBlog(param).then((res) => {
           let result = JSON.parse(res)
           this.showTip(res.message)
-          if (result.code === 0) {
-            this.clearPage()
+          if (result.code !== 0) {
+            this.showTip('发表失败')
+            return
           }
+          this.showTip('发表成功')
+          this.clearPage()
         })
       },
       clearPage () {
-        console.log('clearPage')
+        this.imgSourceSrc = ''
+        this.imgSrc = ''
+        this.title = ''
+        this.desc = ''
+        this.htmlContent = ''
+        this.selectTypeId = -1
+        let editor = this.$refs.editor
+        editor.clearContent()
       },
       showTip (message) {
         this.$emit('message', message)
@@ -129,16 +139,6 @@
           return
         }
         this.showImgTailor = true
-      },
-      _getType () {
-        getType().then((res) => {
-          let result = JSON.parse(res)
-          if (result.code !== 0) {
-            this.showTip(result.message)
-            return
-          }
-          this.typeList = result.data
-        })
       }
     },
     components: {
