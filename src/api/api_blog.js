@@ -10,7 +10,7 @@ export function getBlogs () {
   })
 }
 
-export function addBlog (formData) {
+export function addBlog (param) {
   const url = '/api/blog'
   return axios({
     method: 'post',
@@ -18,7 +18,31 @@ export function addBlog (formData) {
     headers: {
       'Content-Type': 'application/json'
     },
-    data: formData
+    data: param
+  }).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
+export function editBlog (id, param) {
+  const url = '/api/blog' + '?id=' + id
+  return axios({
+    method: 'put',
+    url: url,
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    data: param
+  }).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
+export function deleteBlog (id) {
+  const url = '/api/blog'
+  return axios({
+    url: url + '?id=' + id,
+    method: 'delete'
   }).then((res) => {
     return Promise.resolve(res.data)
   })

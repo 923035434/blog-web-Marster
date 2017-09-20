@@ -30,11 +30,19 @@
         </div>
         <div class="content-right-wrapper">
           <div class="editor-wrapper">
-            <editor :editorHeight="editorHeight" @editor-change="editorChange"></editor>
+            <editor ref="editor" :editorHeight="editorHeight" @editor-change="editorChange"></editor>
           </div>
         </div>
       </div>
       <img-tailor @closeTailor="closeTailor" @imgClip="imgClip" :show="showImgTailor" :imgSrc="imgSourceSrc" ></img-tailor>
+      <div class="type-select-wrapper">
+        <md-input-container>
+          <label for="type-select">选择类型</label>
+          <md-select id="type-select" v-model="selectTypeId">
+            <md-option :value="item.id"  v-for="(item,index) in blogTypes" >{{item.name}}</md-option>
+          </md-select>
+        </md-input-container>
+      </div>
     </div>
   </transition>
 </template>
@@ -42,6 +50,8 @@
 <script type="text/ecmascript-6">
   import editor from '../../base/editor/editor.vue'
   import imgTailor from '../../base/imgTailor/imgTailor.vue'
+  import {mapGetters, mapMutations} from 'vuex'
+  import {editBlog} from '../../api/api_blog'
   export default {
     data () {
       return {
@@ -49,7 +59,9 @@
         title: '',
         desc: '',
         imgSrc: '',
+        selectTypeId: -1,
         imgFile: '',
+        htmlContent: '',
         showImgTailor: false,
         imgSourceSrc: ''
       }
@@ -57,13 +69,56 @@
     computed: {
       editorHeight () {
         return this.editorH + 'px'
-      }
+      },
+      ...mapGetters([
+        'blogShowItem',
+        'blogTypes'
+      ])
     },
     methods: {
       close () {
-        this.$emit('close')
+        this.editBlog()
+        this.setBlogShowState(false)
+      },
+      editBlog () {
+        let id = this.blogShowItem.id
+        let data = {
+          TypeId: this.selectTypeId,
+          Title: this.title,
+          Desc: this.desc,
+          ImgUrl: this.imgSrc,
+          HtmlContent: this.htmlContent
+        }
+        editBlog(id, data).then((res) => {
+          let result = JSON.parse(res)
+          if (result.code !== 0) {
+            this.showTip('修改失敗')
+            return
+          }
+          this.showTip('修改成功')
+          let oldTypeId = this.blogShowItem.typeId
+          let newTypeId = this.selectTypeId
+          this.blogShowItem.typeId = newTypeId
+          this.blogShowItem.title = this.title
+          this.blogShowItem.desc = this.desc
+          this.blogShowItem.img = this.imgSrc
+          this.blogShowItem.content = this.htmlContent
+          if (oldTypeId !== newTypeId) {
+            let oldType = this.blogTypes.filter(item => {
+              return item.id === oldTypeId
+            })[0]
+            let newType = this.blogTypes.filter(item => {
+              return item.id === newTypeId
+            })[0]
+            let index = oldType.blogs.indexOf(this.blogShowItem)
+            let blogItem = oldType.blogs[index]
+            oldType.blogs.splice(index, 1)
+            newType.blogs.push(blogItem)
+          }
+        })
       },
       editorChange (htmlContent) {
+        this.htmlContent = htmlContent
       },
       imgSelected (para) {
         if (para.length === 0) {
@@ -81,15 +136,32 @@
         this.imgSrc = dataUrl
         this.closeTailor()
       },
+      showTip (message) {
+        this.$emit('message', message)
+      },
       showTailor () {
         this.showImgTailor = true
       },
       closeTailor () {
         this.showImgTailor = false
-      }
+      },
+      ...mapMutations({
+        'setBlogShowState': 'SET_BLOG_SHOW_STATE'
+      })
     },
     created () {
       this.editorH = document.body.clientHeight * 0.9
+    },
+    watch: {
+      blogShowItem (newItem) {
+        console.log(newItem)
+        this.title = newItem.title
+        this.desc = newItem.desc
+        this.imgSrc = newItem.img
+        this.htmlContent = newItem.content
+        this.selectTypeId = newItem.typeId
+        this.$refs.editor.fullSetHtmlContent(newItem.content)
+      }
     },
     components: {
       editor,
@@ -142,4 +214,9 @@
         padding-left:40px
         flex: 1
         height:100%
+    .type-select-wrapper
+      position :absolute
+      z-index :50
+      right: 100px
+      top : 200px
 </style>

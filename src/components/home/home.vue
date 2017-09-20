@@ -53,7 +53,7 @@
         </keep-alive>
       </div>
     </div>
-    <blog-show @close="hiddenBlog" v-show="blogShowState"></blog-show>
+    <blog-show @message="openSnackbar" v-show="blogShowState"></blog-show>
     <md-snackbar :md-position="'bottom right'" ref="snackbar" :md-duration="3000">
       <span>{{snackbarMessage}}</span>
       <md-button class="md-accent" md-theme="light-blue" @click="$refs.snackbar.close()">我知道了</md-button>
@@ -66,42 +66,39 @@
   import blogShow from '../../components/blogShow/blogShow.vue'
   import {createblogTypes} from '../../common/js/blogType.js'
   import {getBlogs} from '../../api/api_blog'
-  import {mapMutations} from 'vuex'
+  import {mapMutations, mapGetters} from 'vuex'
   export default {
     data () {
       return {
         title: 'Home',
         childrenPageName: 'newBlog',
-        blogShowState: true,
         snackbarMessage: ''
       }
     },
     created () {
-      getBlogs().then((res) => {
-        let result = JSON.parse(res)
-        if (result.code !== 0) {
-          this.openSnackbar('getBlogs错误')
-        }
-        let blogTypes = createblogTypes(result.data)
-        this.setBlogTypes(blogTypes)
-      })
+      this._getBlogs()
     },
     methods: {
       openChildPage (pageName, title) {
         this.$router.push('/' + pageName + '')
         this.title = title
       },
-      showBlog () {
-        this.blogShowState = true
-      },
-      hiddenBlog () {
-        this.blogShowState = false
-      },
       openSnackbar (message) {
         if (message) {
           this.snackbarMessage = message
         }
         this.$refs.snackbar.open()
+      },
+      _getBlogs () {
+        getBlogs().then((res) => {
+          let result = JSON.parse(res)
+          if (result.code !== 0) {
+            this.openSnackbar('getBlogs错误')
+          }
+          let blogTypes = createblogTypes(result.data)
+          this.setBlogTypes(blogTypes)
+          console.log(this.blogTypes)
+        })
       },
       ...mapMutations({
         'setBlogTypes': 'SET_BLOGTYPES'
@@ -113,7 +110,11 @@
     computed: {
       contentHeight () {
         return document.body.clientHeight - 64 + 'px'
-      }
+      },
+      ...mapGetters([
+        'blogTypes',
+        'blogShowState'
+      ])
     }
   }
 </script>

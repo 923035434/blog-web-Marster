@@ -11,12 +11,12 @@ export default class Blog {
 }
 
 function timeConvert (time) {
-  let date = new Date(time)
+  let date = new Date(parseInt(time))
   let year = date.getFullYear()
   let month = date.getMonth()
   let day = date.getDate()
   let hours = date.getHours()
   let minutes = date.getMinutes()
-  let resutl = year + '年-' + month + '月-' + day + '日' + '/' + hours + ':' + minutes
+  let resutl = year + '-' + month + '-' + day + '  ' + hours + ':' + minutes
   return resutl
 }

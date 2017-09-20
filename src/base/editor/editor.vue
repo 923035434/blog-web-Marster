@@ -61,6 +61,9 @@
         },
         clearContent () {
           this.editor.deleteText(0, this.editor.getLength())
+        },
+        fullSetHtmlContent (htmlContent) {
+          this.editor.clipboard.dangerouslyPasteHTML(htmlContent)
         }
       },
       mounted () {
