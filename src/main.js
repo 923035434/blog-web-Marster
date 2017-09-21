@@ -18,11 +18,12 @@ window.hljs.configure({   // optionally configure hljs
 /* eslint-disable no-new */
 Vue.use(VueMaterial)
 
-Vue.material.registerTheme('default', {
-  primary: 'blue',
-  accent: 'red',
-  warn: 'red'
-})
+Vue.material.registerTheme({
+  default: {
+    primary: 'blue',
+    accent: 'red',
+    warn: 'white'
+  }})
 
 new Vue({
   el: '#app',

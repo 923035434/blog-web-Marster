@@ -32,21 +32,21 @@
       <title-bar text="密码设置"></title-bar>
       <div class="password-wrapper">
         <div class="old-password-1">
-          <md-input-container md-clearable>
+          <md-input-container md-has-password>
             <label>请输入旧密码</label>
-            <md-input v-model="oldPassword"></md-input>
+            <md-input type="password" v-model="oldPassword"></md-input>
           </md-input-container>
         </div>
         <div class="old-password-2">
-          <md-input-container md-clearable>
+          <md-input-container md-has-password>
             <label>请输入新密码</label>
-            <md-input v-model="newPassword1"></md-input>
+            <md-input type="password" v-model="newPassword1"></md-input>
           </md-input-container>
         </div>
         <div class="new-password">
           <md-input-container md-has-password>
             <label>再次输入密码</label>
-            <md-input type="newPassword2"></md-input>
+            <md-input type="password" v-model="newPassword2"></md-input>
           </md-input-container>
           <div class="password_btn">
             <md-button @click.stop="modifyPassword" class="md-raised md-primary">修改密码</md-button>
@@ -61,7 +61,7 @@
 <script type="text/ecmascript-6">
   import imgTailor from '../../base/imgTailor/imgTailor.vue'
   import titleBar from '../../base/titleBar/titleBar.vue'
-  import {editBaseInfo, getBaseInfo} from '../../api/api_BlogSetting'
+  import {editBaseInfo, getBaseInfo, editPassword} from '../../api/api_BlogSetting'
   export default {
     data () {
       return {
@@ -115,15 +115,36 @@
         })
       },
       modifyPassword () {
-        if (this.oldPassword === '') {
+        let oldPassword = this.oldPassword
+        let newPassword1 = this.newPassword1
+        let newPassword2 = this.newPassword2
+        if (oldPassword === '') {
           this.showTip('请输入旧密码')
+          return
         }
-        if (this.newPassword1 === '' || this.newPassword2 === '') {
-          this.showTip('请输入完整新密码')
+        if (newPassword1 === '' || newPassword2 === '') {
+          this.showTip('请输入完整的新密码')
+          return
         }
-        if (this.newPassword1 !== this.newPassword2) {
+        if (newPassword1 !== newPassword2) {
           this.showTip('两次输入密码不一致')
+          return
         }
+        let param = {
+          OldPassword: oldPassword,
+          NewPassWord: newPassword1
+        }
+        editPassword(param).then((res) => {
+          let result = JSON.parse(res)
+          if (result.code !== 0) {
+            this.showTip(result.message)
+            return
+          }
+          this.showTip('修改成功')
+        })
+        this.oldPassword = ''
+        this.newPassword1 = ''
+        this.newPassword2 = ''
       },
       showTip (message) {
         this.$emit('message', message)

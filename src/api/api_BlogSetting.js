@@ -12,8 +12,23 @@ export function getBaseInfo () {
     return Promise.resolve(res.data)
   })
 }
+
 export function editBaseInfo (param) {
   const url = '/api/BlogSetting/BaseInfo'
+  return axios({
+    method: 'PUT',
+    url: url,
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    data: param
+  }).then((res) => {
+    return Promise.resolve(res.data)
+  })
+}
+
+export function editPassword (param) {
+  const url = '/api/UserInfo'
   return axios({
     method: 'PUT',
     url: url,

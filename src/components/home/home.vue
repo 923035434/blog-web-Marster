@@ -8,9 +8,9 @@
             <span>博客</span>
             <md-list-expand>
               <md-list>
-                <md-list-item  @click="openChildPage('blogs','我的博客')" class="md-inset">我的博客<md-icon>event_node</md-icon></md-list-item>
+                <md-list-item  @click="openChildPage('blogs','我的博客')" class="md-inset">我的博客<md-icon class="icon" :class="[{selected: (selectPageName === 'blogs')}]">event_node</md-icon></md-list-item>
 
-                <md-list-item @click="openChildPage('newBlog','新增博客')" class="md-inset">写博客<md-icon>create</md-icon></md-list-item>
+                <md-list-item @click="openChildPage('newBlog','新增博客')" class="md-inset">写博客<md-icon class="icon" :class="[{selected: (selectPageName === 'newBlog')}]">create</md-icon></md-list-item>
               </md-list>
             </md-list-expand>
           </md-list-item>
@@ -18,7 +18,7 @@
             <span>音乐</span>
             <md-list-expand>
               <md-list>
-                <md-list-item @click="openChildPage('lickTheMusic','我喜欢的音乐')" class="md-inset">我喜欢的音乐<md-icon>headset</md-icon></md-list-item>
+                <md-list-item @click="openChildPage('lickTheMusic','我喜欢的音乐')" class="md-inset">我喜欢的音乐<md-icon class="icon" :class="[{selected: (selectPageName === 'lickTheMusic')}]" >headset</md-icon></md-list-item>
               </md-list>
             </md-list-expand>
           </md-list-item>
@@ -26,7 +26,7 @@
             <span>留言板</span>
             <md-list-expand>
               <md-list>
-                <md-list-item @click="openChildPage('messageBoard','留言板')" class="md-inset">留言信息<md-icon>message</md-icon></md-list-item>
+                <md-list-item @click="openChildPage('messageBoard','留言板')" class="md-inset">留言信息<md-icon class="icon" :class="[{selected: (selectPageName === 'messageBoard')}]">message</md-icon></md-list-item>
               </md-list>
             </md-list-expand>
           </md-list-item>
@@ -34,9 +34,9 @@
             <span>个人设置</span>
             <md-list-expand>
               <md-list>
-                <md-list-item @click="openChildPage('baseInfo','基本信息')" class="md-inset">基本信息<md-icon>settings</md-icon></md-list-item>
-                <md-list-item @click="openChildPage('personality','个性设置')" class="md-inset">个性设置<md-icon>settings_system_daydream</md-icon></md-list-item>
-                <md-list-item @click="openChildPage('blogSetting','博客设置')" class="md-inset">博客设置<md-icon>perm_data_setting</md-icon></md-list-item>
+                <md-list-item @click="openChildPage('baseInfo','基本信息')" class="md-inset">基本信息<md-icon class="icon" :class="[{selected: (selectPageName === 'baseInfo')}]">settings</md-icon></md-list-item>
+                <md-list-item @click="openChildPage('personality','个性设置')" class="md-inset">个性设置<md-icon class="icon" :class="[{selected: (selectPageName === 'personality')}]">settings_system_daydream</md-icon></md-list-item>
+                <md-list-item @click="openChildPage('blogSetting','博客设置')" class="md-inset">博客设置<md-icon class="icon" :class="[{selected: (selectPageName === 'blogSetting')}]">perm_data_setting</md-icon></md-list-item>
               </md-list>
             </md-list-expand>
           </md-list-item>
@@ -72,7 +72,8 @@
       return {
         title: 'Home',
         childrenPageName: 'newBlog',
-        snackbarMessage: ''
+        snackbarMessage: '',
+        selectPageName: ''
       }
     },
     created () {
@@ -80,6 +81,7 @@
     },
     methods: {
       openChildPage (pageName, title) {
+        this.selectPageName = pageName
         this.$router.push('/' + pageName + '')
         this.title = title
       },
@@ -146,6 +148,9 @@
         font-family : Roboto
         .md-inset
           color : #969696
+          .icon
+            &.selected
+              color: #2196f3
     .content-wrapper
       position :relative
       max-height:100%
@@ -153,6 +158,6 @@
         box-shadow: 0 1px 3px rgba(0,0,0,.2), 0 1px 1px rgba(0,0,0,.14), 0 2px 1px -1px rgba(0,0,0,.12)
       .content
         padding:16px
-        overflow :scroll
+        overflow-y :auto
         overflow-x: hidden
 </style>
