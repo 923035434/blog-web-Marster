@@ -99,7 +99,6 @@
           }
           let blogTypes = createblogTypes(result.data)
           this.setBlogTypes(blogTypes)
-          console.log(this.blogTypes)
         })
       },
       ...mapMutations({

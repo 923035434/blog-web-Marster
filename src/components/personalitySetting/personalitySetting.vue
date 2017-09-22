@@ -232,7 +232,6 @@
     },
     watch: {
       m_bgImg_index (newIndex) {
-        console.log(this.m_bgImgList)
         let item = this.m_bgImgList[newIndex]
         let param = {
           Id: item.id,

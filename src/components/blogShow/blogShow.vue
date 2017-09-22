@@ -154,7 +154,6 @@
     },
     watch: {
       blogShowItem (newItem) {
-        console.log(newItem)
         this.title = newItem.title
         this.desc = newItem.desc
         this.imgSrc = newItem.img

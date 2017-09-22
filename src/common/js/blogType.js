@@ -11,7 +11,6 @@ export default class BlogType {
 
 export function createblogTypes (blogsData) {
   let blogTypes = []
-  console.log(blogsData)
   for (let i = 0; i < blogsData.length; i++) {
     let blogs = []
     for (let j = 0; j < blogsData[i].blogs.length; j++) {

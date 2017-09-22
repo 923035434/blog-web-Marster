@@ -2,51 +2,87 @@
   <div class="ilickTheMusic">
     <div class="float-block search-wrapper">
       <div class="search">
-        <input type="text">
+        <input @keyup.enter="search" v-model="searchValue" type="text">
       </div>
-      <div class="icon">
+      <div @click="search" class="icon">
         <md-icon>search</md-icon>
       </div>
     </div>
     <div class="float-block search-result-wrapper">
       <md-tabs class="md-warn" md-right>
         <md-tab md-icon="my_library_music">
-          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Deserunt dolorum quas amet cum vitae, omnis! Illum quas voluptatem, expedita iste, dicta ipsum ea veniam dolore in, quod saepe reiciendis nihil.</p>
+          <div class="song-list list-wrapper">
+            <div class="phone-viewport">
+              <md-list>
+                <md-list-item  v-for="song in searchSongList">
+                  <div class="md-list-text-container">
+                    <span>{{song.name}}</span>
+                    <span>{{song.singer.name+'  -  '+song.albumName}}</span>
+                  </div>
+
+                  <md-button @click.stop="likeSong(song)" class="md-icon-button md-list-action">
+                    <md-icon v-if="false" class="md-accent">favorite</md-icon>
+                    <md-icon >favorite_outline</md-icon>
+                  </md-button>
+                </md-list-item>
+              </md-list>
+            </div>
+          </div>
         </md-tab>
 
         <md-tab md-icon="face">
-          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Deserunt dolorum quas amet cum vitae, omnis! Illum quas voluptatem, expedita iste, dicta ipsum ea veniam dolore in, quod saepe reiciendis nihil.</p>
+          <div class="singer-list list-wrapper">
+            <div class="phone-viewport">
+              <md-list class="custom-list md-triple-line">
+                <md-list-item v-for="singer in searchSingerList">
+                  <md-avatar>
+                    <img :src="singer.img" >
+                  </md-avatar>
+                  <div class="md-list-text-container">
+                    <span>{{singer.name}}</span>
+                  </div>
+                  <md-button @click.stop="likeSinger(singer)" class="md-icon-button md-list-action">
+                    <md-icon >add</md-icon>
+                  </md-button>
+                  <md-divider class="md-inset"></md-divider>
+                </md-list-item>
+              </md-list>
+            </div>
+          </div>
         </md-tab>
       </md-tabs>
     </div>
-    <div class="float-block serch-select-simger-wrapper">
+    <div class="float-block search-singer-select-wrapper">
       <div class="phone-viewport">
         <md-list>
           <md-subheader>Contacts</md-subheader>
 
           <md-list-item>
-            <span>Abbey Christansen</span>
+            <div class="md-list-text-container">
+              <span>Ali Connors</span>
+              <span>Brunch this weekend?</span>
+            </div>
 
             <md-button class="md-icon-button md-list-action">
-              <md-icon class="md-primary">chat_bubble</md-icon>
+              <md-icon class="like-icon">favorite_outline</md-icon>
             </md-button>
           </md-list-item>
         </md-list>
       </div>
     </div>
-    <div class="float-block singer-wrapper">
+    <div class="float-block ilike-singer-wrapper">
       <div class="phone-viewport">
         <md-list class="custom-list md-triple-line">
-          <md-subheader class="md-inset">Today</md-subheader>
-          <md-list-item>
+          <md-subheader class="md-inset">我的歌手列表</md-subheader>
+          <md-list-item @click="showLikeSingerSong(singer)" v-for="singer in singerList">
             <md-avatar>
-              <img src="https://y.gtimg.cn/music/photo_new/T001R300x300M0000025NhlN2yWrP4.jpg?max_age=2592000" alt="People">
+              <img :src="singer.img" >
             </md-avatar>
             <div class="md-list-text-container">
-              <span>Ali Connors</span>
+              <span>{{singer.name}}</span>
             </div>
-            <md-button class="md-icon-button md-list-action">
-              <md-icon class="md-primary">star</md-icon>
+            <md-button @click.stop="noLikeSinger(singer)" class="md-icon-button md-list-action">
+              <md-icon >remove</md-icon>
             </md-button>
 
             <md-divider class="md-inset"></md-divider>
@@ -54,16 +90,19 @@
         </md-list>
       </div>
     </div>
-    <div class="float-block ilike-select-simger-wrapper">
+    <div class="float-block ilike-singer-select-wrapper">
       <div class="phone-viewport">
         <md-list>
-          <md-subheader>Contacts</md-subheader>
+          <md-subheader>{{selectSinger.name}}</md-subheader>
 
-          <md-list-item>
-            <span>Abbey Christansen</span>
+          <md-list-item v-for="song in SongList">
+            <div class="md-list-text-container">
+              <span>{{song.name}}</span>
+              <span>{{song.singer.name+'  -  '+song.albumName}}</span>
+            </div>
 
-            <md-button class="md-icon-button md-list-action">
-              <md-icon class="md-primary">chat_bubble</md-icon>
+            <md-button @click="noLikeSong(song)" class="md-icon-button md-list-action">
+              <md-icon class="md-accent">favorite</md-icon>
             </md-button>
           </md-list-item>
         </md-list>
@@ -73,7 +112,170 @@
 </template>
 
 <script type="text/ecmascript-6">
-    export default {}
+    import {getSearchSinger, getSearchSong, getSinger, addSinger, deleteSinger, getSongForSinger, deleteSong, addSong} from '../../api/api_music'
+    import {createSingerListForSearchData, createSingerListForData} from '../../common/js/singer'
+    import {createSongListForSearchData, createSongListForData} from '../../common/js/song'
+    import {parseJson} from '../../common/js/Util'
+    export default {
+      data () {
+        return {
+          searchValue: '',
+          searchSingerList: [],
+          searchSongList: [],
+          singerList: [],
+          selectSinger: {},
+          SongList: []
+        }
+      },
+      created () {
+        getSinger().then((res) => {
+          let result = parseJson(res)
+          if (result.code !== 0) {
+            this.showTip('getSingercuo错误')
+            return
+          }
+          this.singerList = createSingerListForData(result.data)
+        })
+      },
+      methods: {
+        search () {
+          if (this.searchValue === '') {
+            this.showTip('请输入搜索内容')
+            return
+          }
+          getSearchSinger(this.searchValue).then((res) => {
+            let result = res
+            if (typeof result === 'string') {
+              result = JSON.parse(res)
+            }
+            if (result.code !== 0) {
+              this.showTip('搜索结果错误')
+              return
+            }
+            let param = result.data.singer.itemlist
+            this.searchSingerList = createSingerListForSearchData(param)
+          })
+          getSearchSong(this.searchValue).then((res) => {
+            let result = res
+            if (typeof result === 'string') {
+              result = JSON.parse(res)
+            }
+            if (result.code !== 0) {
+              this.showTip('搜索结果错误')
+              return
+            }
+            let param = result.data.song.list
+            this.searchSongList = createSongListForSearchData(param)
+          })
+        },
+        likeSinger (singer) {
+          let param = {
+            SingerId: singer.singerId,
+            Name: singer.name,
+            ImgUrl: singer.img
+          }
+          addSinger(param).then((res) => {
+            let result = parseJson(res)
+            if (result.code !== 0) {
+              this.showTip(result.message)
+              return
+            }
+            singer.id = result.data.id
+            this.singerList.push(singer)
+            this.showTip('添加成功')
+          })
+        },
+        noLikeSinger (singer) {
+          if (singer.id === -1) {
+            return
+          }
+          deleteSinger(singer.id).then((res) => {
+            let result = parseJson(res)
+            if (result.code !== 0) {
+              this.showTip(result.message)
+              return
+            }
+            let index = this.singerList.indexOf(singer)
+            this.singerList.splice(index, 1)
+            this.showTip('移除成功')
+          })
+        },
+        showLikeSingerSong (singer) {
+          this.searchValue = singer.name
+          this.search()
+          this.selectSinger = singer
+          getSongForSinger(singer.id).then((res) => {
+            let result = parseJson(res)
+            if (result.code !== 0) {
+              this.showTip(result.message)
+              return
+            }
+            this.SongList = createSongListForData(result.data, singer)
+          })
+        },
+        likeSong (song) {
+          let singerId = song.singer.singerId
+          let singer = this.singerList.filter(singer => {
+            return parseInt(singer.singerId) === parseInt(singerId)
+          })[0]
+          if (!singer) {
+            this.likeSinger(song.singer)
+            let timer = setTimeout(() => {
+              if (!this.likeNumber) {
+                this.likeNumber = 1
+              } else {
+                this.likeNumber++
+              }
+              if (this.likeNumber > 5) {
+                this.likeNumber = 1
+                this.showTip('添加超时')
+                clearTimeout(timer)
+                return
+              }
+              clearTimeout(timer)
+              this.likeSong(song)
+            }, 40)
+          } else {
+            let param = {
+              SingerId: singer.id,
+              MusicId: song.musicId,
+              Name: song.name,
+              ImgUrl: song.imgUrl,
+              AlbumName: song.albumName,
+              Url: song.url
+            }
+            addSong(param).then((res) => {
+              let result = parseJson(res)
+              if (result.code !== 0) {
+                this.showTip(result.message)
+                return
+              }
+              song.id = result.data.id
+              this.SongList.push(song)
+              this.showTip('添加成功')
+            })
+          }
+        },
+        noLikeSong (song) {
+          if (song.id === -1) {
+            return
+          }
+          deleteSong(song.id).then((res) => {
+            let result = parseJson(res)
+            if (result.code !== 0) {
+              this.showTip(result.message)
+              return
+            }
+            let index = this.SongList.indexOf(song)
+            this.SongList.splice(index, 1)
+            this.showTip('删除成功')
+          })
+        },
+        showTip (message) {
+          this.$emit('message', message)
+        }
+      }
+    }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
@@ -117,22 +319,27 @@
       top: 60px
       left: 5%
       width:50%
-      height: 40%
-    .singer-wrapper
+      height: 340px
+      .list-wrapper
+        width: 100%
+        height:250px
+        overflow-y :auto
+        overflow-x :hidden
+    .ilike-singer-wrapper
       top: 60px
       right :10%
       overflow-y :auto
       overflow-x :hidden
       width:30%
-      height: 40%
-    .serch-select-simger-wrapper
-      top: 50%
+      height: 340px
+    .search-singer-select-wrapper
+      top: 430px
       left: 5%
       width:40%
-      height: 50%
-    .ilike-select-simger-wrapper
-      top: 50%
+      height: 427px
+    .ilike-singer-select-wrapper
+      top: 430px
       right :10%
       width:40%
-      height: 50%
+      height: 427px
 </style>

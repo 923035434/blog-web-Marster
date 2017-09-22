@@ -71,7 +71,6 @@
       },
       deleteMessage () {
         let index = this.deleteIndex
-        console.log(index)
         if (index === null) {
           return
         }
