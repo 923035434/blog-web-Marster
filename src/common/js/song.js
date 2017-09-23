@@ -24,6 +24,21 @@ export function createSongListForSearchData (data) {
   return list
 }
 
+export function createSongListForSearchSinger (data, singer) {
+  let list = []
+  for (var item in data) {
+    let musicData = data[item].musicData
+    let musicId = musicData.songid
+    let name = musicData.songname
+    let imgUrl = 'https://y.gtimg.cn/music/photo_new/T002R300x300M000' + musicData.albummid + '.jpg?max_age=2592000'
+    let albumName = musicData.albumname
+    let url = 'http://ws.stream.qqmusic.qq.com/' + musicData.songid + '.m4a?fromtag=46'
+    let song = new Song(-1, musicId, name, singer, imgUrl, albumName, url)
+    list.push(song)
+  }
+  return list
+}
+
 export function createSongListForData (data, singer) {
   let list = []
   for (var item in data) {

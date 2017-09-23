@@ -21,8 +21,8 @@
                   </div>
 
                   <md-button @click.stop="likeSong(song)" class="md-icon-button md-list-action">
-                    <md-icon v-if="false" class="md-accent">favorite</md-icon>
-                    <md-icon >favorite_outline</md-icon>
+                    <md-icon v-if="isLikeSong(song)" class="md-accent">favorite</md-icon>
+                    <md-icon v-if="!isLikeSong(song)" >favorite_outline</md-icon>
                   </md-button>
                 </md-list-item>
               </md-list>
@@ -34,7 +34,7 @@
           <div class="singer-list list-wrapper">
             <div class="phone-viewport">
               <md-list class="custom-list md-triple-line">
-                <md-list-item v-for="singer in searchSingerList">
+                <md-list-item @click.stop="showSearchSingerSelect(singer)" v-for="singer in searchSingerList">
                   <md-avatar>
                     <img :src="singer.img" >
                   </md-avatar>
@@ -55,16 +55,17 @@
     <div class="float-block search-singer-select-wrapper">
       <div class="phone-viewport">
         <md-list>
-          <md-subheader>Contacts</md-subheader>
+          <md-subheader>{{selectSearchSinger.name+' - Top100'}}</md-subheader>
 
-          <md-list-item>
+          <md-list-item v-for="song in searchSingerSongList">
             <div class="md-list-text-container">
-              <span>Ali Connors</span>
-              <span>Brunch this weekend?</span>
+              <span>{{song.name}}</span>
+              <span>{{song.singer.name+'  -  '+song.albumName}}</span>
             </div>
 
-            <md-button class="md-icon-button md-list-action">
-              <md-icon class="like-icon">favorite_outline</md-icon>
+            <md-button @click="likeSong(song)" class="md-icon-button md-list-action">
+              <md-icon v-if="isLikeSong(song)" class="md-accent">favorite</md-icon>
+              <md-icon v-if="!isLikeSong(song)" >favorite_outline</md-icon>
             </md-button>
           </md-list-item>
         </md-list>
@@ -112,9 +113,9 @@
 </template>
 
 <script type="text/ecmascript-6">
-    import {getSearchSinger, getSearchSong, getSinger, addSinger, deleteSinger, getSongForSinger, deleteSong, addSong} from '../../api/api_music'
+    import {getSearchSinger, getSearchSong, getSearchSongForSinger, getSinger, getSong, addSinger, deleteSinger, getSongForSinger, deleteSong, addSong} from '../../api/api_music'
     import {createSingerListForSearchData, createSingerListForData} from '../../common/js/singer'
-    import {createSongListForSearchData, createSongListForData} from '../../common/js/song'
+    import {createSongListForSearchData, createSongListForSearchSinger, createSongListForData} from '../../common/js/song'
     import {parseJson} from '../../common/js/Util'
     export default {
       data () {
@@ -122,22 +123,42 @@
           searchValue: '',
           searchSingerList: [],
           searchSongList: [],
+          searchSingerSongList: [],
           singerList: [],
+          selectSearchSinger: {},
           selectSinger: {},
-          SongList: []
+          SongList: [],
+          likeSongList: []
         }
       },
       created () {
-        getSinger().then((res) => {
-          let result = parseJson(res)
-          if (result.code !== 0) {
-            this.showTip('getSingercuo错误')
-            return
-          }
-          this.singerList = createSingerListForData(result.data)
-        })
+        this._getSingerList()
+        this._getSongList()
+        this.allSong = {
+          name: '全部歌曲'
+        }
       },
       methods: {
+        _getSingerList () {
+          getSinger().then((res) => {
+            let result = parseJson(res)
+            if (result.code !== 0) {
+              this.showTip('_getSingerList错误')
+              return
+            }
+            this.singerList = createSingerListForData(result.data)
+          })
+        },
+        _getSongList () {
+          getSong().then((res) => {
+            let result = parseJson(res)
+            if (result.code !== 0) {
+              this.showTip('_getSongList错误')
+            }
+            this.likeSongList = createSongListForData(result.data)
+            console.log(this.likeSongList)
+          })
+        },
         search () {
           if (this.searchValue === '') {
             this.showTip('请输入搜索内容')
@@ -213,6 +234,17 @@
             this.SongList = createSongListForData(result.data, singer)
           })
         },
+        showSearchSingerSelect (singer) {
+          this.selectSearchSinger = singer
+          getSearchSongForSinger(singer.singerId).then((res) => {
+            let result = parseJson(res)
+            if (result.code !== 0) {
+              this.showTip(result.message)
+              return
+            }
+            this.searchSingerSongList = createSongListForSearchSinger(res.data.list, this.selectSearchSinger)
+          })
+        },
         likeSong (song) {
           let singerId = song.singer.singerId
           let singer = this.singerList.filter(singer => {
@@ -251,7 +283,9 @@
                 return
               }
               song.id = result.data.id
-              this.SongList.push(song)
+              this.likeSongList.push(song)
+              this.SongList = this.likeSongList.slice()
+              this.selectSinger = this.allSong
               this.showTip('添加成功')
             })
           }
@@ -268,8 +302,18 @@
             }
             let index = this.SongList.indexOf(song)
             this.SongList.splice(index, 1)
+            let item = this.likeSongList.filter(s => {
+              return s.musicId.toString() === song.musicId.toString()
+            })[0]
+            this.likeSongList.splice(this.likeSongList.indexOf(item), 1)
             this.showTip('删除成功')
           })
+        },
+        isLikeSong (song) {
+          let item = this.likeSongList.filter(s => {
+            return s.musicId.toString() === song.musicId.toString()
+          })
+          return item.length > 0
         },
         showTip (message) {
           this.$emit('message', message)
@@ -337,9 +381,13 @@
       left: 5%
       width:40%
       height: 427px
+      overflow-x :hidden
+      overflow-y :scroll
     .ilike-singer-select-wrapper
       top: 430px
       right :10%
       width:40%
       height: 427px
+      overflow-x :hidden
+      overflow-y :scroll
 </style>

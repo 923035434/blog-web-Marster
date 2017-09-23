@@ -9,7 +9,7 @@ export default class Singer {
 
 export function createSingerForSearchData (data) {
   let imgUrl = 'https://y.gtimg.cn/music/photo_new/T001R300x300M000' + data.mid + '.jpg?max_age=2592000'
-  let singer = new Singer(-1, data.id, data.name, imgUrl)
+  let singer = new Singer(-1, data.mid, data.name, imgUrl)
   return singer
 }
 
@@ -17,7 +17,7 @@ export function createSingerListForSearchData (data) {
   let list = []
   for (var item in data) {
     let imgUrl = 'https://y.gtimg.cn/music/photo_new/T001R300x300M000' + data[item].mid + '.jpg?max_age=2592000'
-    list.push(new Singer(-1, data[item].id, data[item].name, imgUrl))
+    list.push(new Singer(-1, data[item].mid, data[item].name, imgUrl))
   }
   return list
 }
