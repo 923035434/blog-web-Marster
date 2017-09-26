@@ -12,10 +12,6 @@
                 <span class="text">{{message.email}}</span>
               </div>
               <div class="md-subhead">
-                <md-icon>phonelink_ring</md-icon>
-                <span class="text">{{message.phone}}</span>
-              </div>
-              <div class="md-subhead">
                 <md-icon>alarm</md-icon>
                 <span class="text">{{message.time}}</span>
               </div>
@@ -54,7 +50,7 @@
         }
         this.messages = result.data
         for (let i = 0; i < this.messages.length; i++) {
-          let date = new Date(this.messages[i].time)
+          let date = new Date(parseInt(this.messages[i].time))
           this.messages[i].time = date.getFullYear() + '年-' + (date.getMonth() + 1) + '月-' + date.getDate() + '日/' + date.getHours() + ':' + date.getMinutes()
         }
       })
