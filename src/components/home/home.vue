@@ -1,7 +1,11 @@
 <template>
   <div class="home">
     <div class="select-bar-wrapper">
-      <div class="select-top"></div>
+      <div class="select-top">
+        <div class="logo">
+          <logo-L height="120" color="#2196f3"></logo-L>
+        </div>
+      </div>
       <div class="select-wrapper">
         <md-list>
           <md-list-item >
@@ -64,6 +68,7 @@
 <script type="text/ecmascript-6">
 //  import * as pageType from '../../common/js/pageMapConfig'
   import blogShow from '../../components/blogShow/blogShow.vue'
+  import logoL from '../../base/logo_L/logo_L.vue'
   import {createblogTypes} from '../../common/js/blogType.js'
   import {getBlogs} from '../../api/api_blog'
   import {mapMutations, mapGetters} from 'vuex'
@@ -106,6 +111,7 @@
       })
     },
     components: {
+      'logo-L': logoL,
       'blog-show': blogShow
     },
     computed: {
@@ -142,7 +148,14 @@
       .select-top
         width: 100%
         height:172px
+        padding-top: 20px
+        padding-bottom: 20px
+        cursor: pointer
         border-bottom: 1px solid rgba(0,0,0,.12)
+        .logo
+          width:100%
+          height:100%
+          margin : 0 auto 0 auto
       .select-wrapper
         font-family : Roboto
         .md-inset
