@@ -8,107 +8,115 @@
         <md-icon>search</md-icon>
       </div>
     </div>
-    <div class="float-block search-result-wrapper">
-      <md-tabs class="md-warn" md-right>
-        <md-tab md-icon="my_library_music">
-          <div class="song-list list-wrapper">
-            <div class="phone-viewport">
-              <md-list>
-                <md-list-item  v-for="song in searchSongList">
-                  <div class="md-list-text-container">
-                    <span>{{song.name}}</span>
-                    <span>{{song.singer.name+'  -  '+song.albumName}}</span>
-                  </div>
+    <transition name="fade">
+      <div v-show="searchSingerList.length>0||searchSongList.length>0" class="float-block search-result-wrapper">
+        <md-tabs class="md-warn" md-right>
+          <md-tab md-icon="my_library_music">
+            <div class="song-list list-wrapper">
+              <div class="phone-viewport">
+                <md-list>
+                  <md-list-item  v-for="song in searchSongList">
+                    <div class="md-list-text-container">
+                      <span>{{song.name}}</span>
+                      <span>{{song.singer.name+'  -  '+song.albumName}}</span>
+                    </div>
 
-                  <md-button @click.stop="likeSong(song)" class="md-icon-button md-list-action">
-                    <md-icon v-if="isLikeSong(song)" class="md-accent">favorite</md-icon>
-                    <md-icon v-if="!isLikeSong(song)" >favorite_outline</md-icon>
-                  </md-button>
-                </md-list-item>
-              </md-list>
+                    <md-button @click.stop="likeSong(song)" class="md-icon-button md-list-action">
+                      <md-icon v-if="isLikeSong(song)" class="md-accent">favorite</md-icon>
+                      <md-icon v-if="!isLikeSong(song)" >favorite_outline</md-icon>
+                    </md-button>
+                  </md-list-item>
+                </md-list>
+              </div>
             </div>
-          </div>
-        </md-tab>
+          </md-tab>
 
-        <md-tab md-icon="face">
-          <div class="singer-list list-wrapper">
-            <div class="phone-viewport">
-              <md-list class="custom-list md-triple-line">
-                <md-list-item @click.stop="showSearchSingerSelect(singer)" v-for="singer in searchSingerList">
-                  <md-avatar>
-                    <img :src="singer.img" >
-                  </md-avatar>
-                  <div class="md-list-text-container">
-                    <span>{{singer.name}}</span>
-                  </div>
-                  <md-button @click.stop="likeSinger(singer)" class="md-icon-button md-list-action">
-                    <md-icon >add</md-icon>
-                  </md-button>
-                  <md-divider class="md-inset"></md-divider>
-                </md-list-item>
-              </md-list>
+          <md-tab md-icon="face">
+            <div class="singer-list list-wrapper">
+              <div class="phone-viewport">
+                <md-list class="custom-list md-triple-line">
+                  <md-list-item @click.stop="showSearchSingerSelect(singer)" v-for="singer in searchSingerList">
+                    <md-avatar>
+                      <img :src="singer.img" >
+                    </md-avatar>
+                    <div class="md-list-text-container">
+                      <span>{{singer.name}}</span>
+                    </div>
+                    <md-button @click.stop="likeSinger(singer)" class="md-icon-button md-list-action">
+                      <md-icon >add</md-icon>
+                    </md-button>
+                    <md-divider class="md-inset"></md-divider>
+                  </md-list-item>
+                </md-list>
+              </div>
             </div>
-          </div>
-        </md-tab>
-      </md-tabs>
-    </div>
-    <div class="float-block search-singer-select-wrapper">
-      <div class="phone-viewport">
-        <md-list>
-          <md-subheader>{{selectSearchSinger.name+' - Top100'}}</md-subheader>
-
-          <md-list-item v-for="song in searchSingerSongList">
-            <div class="md-list-text-container">
-              <span>{{song.name}}</span>
-              <span>{{song.singer.name+'  -  '+song.albumName}}</span>
-            </div>
-
-            <md-button @click="likeSong(song)" class="md-icon-button md-list-action">
-              <md-icon v-if="isLikeSong(song)" class="md-accent">favorite</md-icon>
-              <md-icon v-if="!isLikeSong(song)" >favorite_outline</md-icon>
-            </md-button>
-          </md-list-item>
-        </md-list>
+          </md-tab>
+        </md-tabs>
       </div>
-    </div>
-    <div class="float-block ilike-singer-wrapper">
-      <div class="phone-viewport">
-        <md-list class="custom-list md-triple-line">
-          <md-subheader class="md-inset">我的歌手列表</md-subheader>
-          <md-list-item @click="showLikeSingerSong(singer)" v-for="singer in singerList">
-            <md-avatar>
-              <img :src="singer.img" >
-            </md-avatar>
-            <div class="md-list-text-container">
-              <span>{{singer.name}}</span>
-            </div>
-            <md-button @click.stop="noLikeSinger(singer)" class="md-icon-button md-list-action">
-              <md-icon >remove</md-icon>
-            </md-button>
+    </transition>
+    <transition name="fade">
+      <div v-show="selectSearchSinger.name" class="float-block search-singer-select-wrapper">
+        <div class="phone-viewport">
+          <md-list>
+            <md-subheader>{{selectSearchSinger.name+' - Top100'}}</md-subheader>
 
-            <md-divider class="md-inset"></md-divider>
-          </md-list-item>
-        </md-list>
+            <md-list-item v-for="song in searchSingerSongList">
+              <div class="md-list-text-container">
+                <span>{{song.name}}</span>
+                <span>{{song.singer.name+'  -  '+song.albumName}}</span>
+              </div>
+
+              <md-button @click="likeSong(song)" class="md-icon-button md-list-action">
+                <md-icon v-if="isLikeSong(song)" class="md-accent">favorite</md-icon>
+                <md-icon v-if="!isLikeSong(song)" >favorite_outline</md-icon>
+              </md-button>
+            </md-list-item>
+          </md-list>
+        </div>
       </div>
-    </div>
-    <div class="float-block ilike-singer-select-wrapper">
-      <div class="phone-viewport">
-        <md-list>
-          <md-subheader>{{selectSinger.name}}</md-subheader>
+    </transition>
+    <transition name="fade">
+      <div v-show="singerList.length>0" class="float-block ilike-singer-wrapper">
+        <div class="phone-viewport">
+          <md-list class="custom-list md-triple-line">
+            <md-subheader class="md-inset">我的歌手列表</md-subheader>
+            <md-list-item @click="showLikeSingerSong(singer)" v-for="singer in singerList">
+              <md-avatar>
+                <img :src="singer.img" >
+              </md-avatar>
+              <div class="md-list-text-container">
+                <span>{{singer.name}}</span>
+              </div>
+              <md-button @click.stop="noLikeSinger(singer)" class="md-icon-button md-list-action">
+                <md-icon >remove</md-icon>
+              </md-button>
 
-          <md-list-item v-for="song in SongList">
-            <div class="md-list-text-container">
-              <span>{{song.name}}</span>
-              <span>{{song.singer.name+'  -  '+song.albumName}}</span>
-            </div>
-
-            <md-button @click="noLikeSong(song)" class="md-icon-button md-list-action">
-              <md-icon class="md-accent">favorite</md-icon>
-            </md-button>
-          </md-list-item>
-        </md-list>
+              <md-divider class="md-inset"></md-divider>
+            </md-list-item>
+          </md-list>
+        </div>
       </div>
-    </div>
+    </transition>
+    <transition name="fade">
+      <div v-show="selectSinger.name" class="float-block ilike-singer-select-wrapper">
+        <div class="phone-viewport">
+          <md-list>
+            <md-subheader>{{selectSinger.name}}</md-subheader>
+
+            <md-list-item v-for="song in SongList">
+              <div class="md-list-text-container">
+                <span>{{song.name}}</span>
+                <span>{{song.singer.name+'  -  '+song.albumName}}</span>
+              </div>
+
+              <md-button @click="noLikeSong(song)" class="md-icon-button md-list-action">
+                <md-icon class="md-accent">favorite</md-icon>
+              </md-button>
+            </md-list-item>
+          </md-list>
+        </div>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -364,6 +372,10 @@
       left: 5%
       width:50%
       height: 340px
+      &.fade-enter-active,&.fade-leave-active
+        transition: all 0.4s
+      &.fade-enter,&.fade-leave-to
+        opacity: 0
       .list-wrapper
         width: 100%
         height:250px
@@ -376,6 +388,10 @@
       overflow-x :hidden
       width:30%
       height: 340px
+      &.fade-enter-active,&.fade-leave-active
+        transition: all 0.4s
+      &.fade-enter,&.fade-leave-to
+        opacity: 0
     .search-singer-select-wrapper
       top: 430px
       left: 5%
@@ -383,6 +399,10 @@
       height: 427px
       overflow-x :hidden
       overflow-y :scroll
+      &.fade-enter-active,&.fade-leave-active
+        transition: all 0.4s
+      &.fade-enter,&.fade-leave-to
+        opacity: 0
     .ilike-singer-select-wrapper
       top: 430px
       right :10%
@@ -390,4 +410,8 @@
       height: 427px
       overflow-x :hidden
       overflow-y :scroll
+      &.fade-enter-active,&.fade-leave-active
+        transition: all 0.4s
+      &.fade-enter,&.fade-leave-to
+        opacity: 0
 </style>

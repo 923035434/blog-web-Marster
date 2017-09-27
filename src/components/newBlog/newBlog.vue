@@ -39,6 +39,7 @@
   import editor from '../../base/editor/editor.vue'
   import imgTailor from '../../base/imgTailor/imgTailor.vue'
   import {addBlog} from '../../api/api_blog'
+  import Blog from '../../common/js/blog'
   import {mapGetters} from 'vuex'
   export default {
     data () {
@@ -107,8 +108,19 @@
             this.showTip('发表失败')
             return
           }
+          let data = result.data
+          let typeId = this.selectTypeId
+          let blog = new Blog(data.Id, data.Title, data.Description, data.ImgUrl, data.HtmlContent, data.Time, this.selectTypeId)
           this.showTip('发表成功')
           this.clearPage()
+          let blogType = this.blogTypes.filter(blogType => {
+            return parseInt(blogType.id) === parseInt(typeId)
+          })[0]
+          console.log(typeId)
+          console.log(blogType)
+          if (blogType) {
+            blogType.blogs.push(blog)
+          }
         })
       },
       clearPage () {

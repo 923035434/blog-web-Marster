@@ -52,9 +52,12 @@
         <h2 class="md-title">{{title}}</h2>
       </md-toolbar>
       <div :style="{'height':contentHeight}" class="content">
-        <keep-alive>
-          <router-view @message="openSnackbar"></router-view>
-        </keep-alive>
+
+          <transition name="up">
+            <keep-alive>
+            <router-view class="router-wrapper" @message="openSnackbar"></router-view>
+            </keep-alive>
+          </transition>
       </div>
     </div>
     <blog-show @message="openSnackbar" v-show="blogShowState"></blog-show>
@@ -75,10 +78,10 @@
   export default {
     data () {
       return {
-        title: 'Home',
+        title: '我的博客',
         childrenPageName: 'newBlog',
         snackbarMessage: '',
-        selectPageName: ''
+        selectPageName: 'blogs'
       }
     },
     created () {
@@ -172,4 +175,10 @@
         padding:16px
         overflow-y :auto
         overflow-x: hidden
+        .router-wrapper
+          &.up-enter-active
+            transition:all 0.6s
+          &.up-enter
+            opacity 0
+            transform:translateY(100px)
 </style>
